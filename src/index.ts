@@ -5,5 +5,5 @@ await login();
 const client = getClient();
 
 client.on('ready', () => {
-    console.log('Hello, I am', client.user?.displayName);
-})
+	console.log('Hello, I am', client.user?.displayName);
+});
