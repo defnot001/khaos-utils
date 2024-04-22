@@ -27,6 +27,8 @@ export async function login() {
     }
 
     const res = await client?.login(getConfig().discordToken);
-    console.log('Discord login res:', res);
+    if (!res) {
+        throw new Error('Failed to login to discord!');
+    }
     return res;
 }
