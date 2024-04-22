@@ -2,6 +2,25 @@ import Bun from 'bun';
 import { z } from 'zod';
 import { generateErrorMessage } from 'zod-error';
 
+const dbSchema = z.string().min(1).max(64);
+
+let dbConfig: z.infer<typeof dbSchema> | null = null;
+export function getDbConfig() {
+	if (dbConfig) {
+		return dbConfig;
+	}
+
+	const conf = process.env.DATABASE_URL;
+	const parsed = dbSchema.safeParse(conf);
+	if (!parsed.success) {
+		const message = generateErrorMessage(parsed.error.issues);
+		throw new Error(message);
+	}
+
+	dbConfig = parsed.data;
+	return dbConfig;
+}
+
 const snowflakeSchema = z.string().min(16).max(24);
 
 const configSchema = z.object({
