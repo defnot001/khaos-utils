@@ -1,4 +1,4 @@
-import { Client, GatewayIntentBits, type ClientOptions } from 'discord.js';
+import { Client, type ClientOptions, GatewayIntentBits } from 'discord.js';
 import { getConfig } from './config';
 
 let client: Client | null = null;
