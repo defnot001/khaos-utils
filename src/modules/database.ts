@@ -25,12 +25,15 @@ export class DbDriver {
 			if (migration.length === 0) {
 				continue;
 			}
-			const query = this.db.query(migration);
-			query.all();
-			query.finalize();
+			const queries = migration.split(';');
+			for (const q of queries) {
+				const query = this.db.query(q);
+				query.all();
+				query.finalize();
+			}
 		}
 
-		const query = this.db.query('select * from members');
+		const query = this.db.query('select * from applications');
 		console.log(query.all());
 	}
 
