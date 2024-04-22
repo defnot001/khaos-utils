@@ -6,6 +6,7 @@ const snowflakeSchema = z.string().min(16).max(24);
 
 const configSchema = z.object({
 	discordToken: z.string().min(32),
+	discordAppId: snowflakeSchema,
 	discordServer: snowflakeSchema,
 	discordChannel: snowflakeSchema,
 });
@@ -18,6 +19,7 @@ export function getConfig() {
 
 	const conf = {
 		discordToken: Bun.env.DISCORD_TOKEN,
+		discordAppId: Bun.env.DISCORD_APP_ID,
 		discordServer: Bun.env.DISCORD_SERVER,
 		discordChannel: Bun.env.DISCORD_CHANNEL,
 	};

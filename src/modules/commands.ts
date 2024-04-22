@@ -1,21 +1,23 @@
 import fs from 'node:fs';
-import type { CommandInteraction, SlashCommandBuilder } from 'discord.js';
+import { REST, Routes, type CommandInteraction, type SlashCommandBuilder } from 'discord.js';
 import { z } from 'zod';
+import { getConfig } from '../helpers/config';
 
 interface Command {
 	data: SlashCommandBuilder;
-	execute: (arg0: CommandInteraction) => undefined;
+	execute: (arg0: CommandInteraction) => Promise<undefined>;
 }
+
+const commandSchema = z.object({
+	data: z.custom<SlashCommandBuilder>(),
+	execute: z.function().args(z.custom<CommandInteraction>()),
+});
 
 export default class Commands {
 	private static _instance: Commands | null = null;
-	private _commands: Command[] = [];
+	private commands: Map<string, Command> = new Map();
 
 	// TODO: unfuck this command schema
-	private commandSchema = z.object({
-		data: z.custom<SlashCommandBuilder>(),
-		execute: z.function().args(z.custom<CommandInteraction>()),
-	});
 
 	private constructor() {
 		Commands._instance = this;
@@ -30,12 +32,35 @@ export default class Commands {
 	}
 
 	private isCommand(command: unknown) {
-		const parsed = this.commandSchema.safeParse(command);
+		const parsed = commandSchema.safeParse(command);
 		return parsed.success;
 	}
 
+	private async registerCommands() {
+		const cmds = [];
+		for (const cmd of this.commands.values()) {
+			cmds.push(cmd.data.toJSON());
+		}
+
+		const config = getConfig();
+		const rest = new REST().setToken(config.discordToken);
+		try {
+			const data = await rest.put(
+				Routes.applicationGuildCommands(config.discordAppId, config.discordServer),
+				{ body: cmds },
+			);
+
+			if (!Array.isArray(data)) {
+				return;
+			}
+			console.log('Successfully loaded', data.length, '(/) commands');
+		} catch (error) {
+			console.error('Error while registering commands:', error, new Date());
+		}
+	}
+
 	async load() {
-		if (this._commands.length > 0) {
+		if (this.commands.size > 0) {
 			return;
 		}
 
@@ -48,12 +73,21 @@ export default class Commands {
 				return null;
 			}
 			// TODO: unfuck this cast
+			this.commands.set(module.default.data.name, module.default);
 			return module.default as Command;
 		});
 
-		const res = await Promise.all(commands);
-		this._commands = res.filter((cmd) => cmd !== null);
+		await Promise.all(commands);
+		this.registerCommands();
+	}
 
-		console.log('Found', this._commands.length, 'commands');
+	async execute(interaction: CommandInteraction) {
+		const cmd = this.commands.get(interaction.commandName);
+		try {
+			await cmd?.execute(interaction);
+		} catch (error) {
+			console.error('Error while running command:', cmd?.data.name, error, new Date());
+			interaction.reply('Failed to run command! Please try again later.');
+		}
 	}
 }
