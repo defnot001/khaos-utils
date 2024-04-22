@@ -1,7 +1,7 @@
-node_modules/*
-package-lock.json
 db/*
 logs/
 .env
 .idea
-package.json
+
+bun.lockb
+node_modules
