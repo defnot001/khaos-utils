@@ -1,23 +1,17 @@
-import fs from 'node:fs';
 import { REST, Routes, type CommandInteraction, type SlashCommandBuilder } from 'discord.js';
-import { z } from 'zod';
 import { getConfig } from '../helpers/config';
 
-interface Command {
+export interface Command {
 	data: SlashCommandBuilder;
 	execute: (arg0: CommandInteraction) => Promise<undefined>;
 }
-
-const commandSchema = z.object({
-	data: z.custom<SlashCommandBuilder>(),
-	execute: z.function().args(z.custom<CommandInteraction>()),
-});
+// Imports for commands
+import ping from '../commands/ping';
+import apply from '../commands/apply';
 
 export default class Commands {
 	private static _instance: Commands | null = null;
 	private commands: Map<string, Command> = new Map();
-
-	// TODO: unfuck this command schema
 
 	private constructor() {
 		Commands._instance = this;
@@ -29,11 +23,6 @@ export default class Commands {
 		}
 
 		return new Commands();
-	}
-
-	private isCommand(command: unknown) {
-		const parsed = commandSchema.safeParse(command);
-		return parsed.success;
 	}
 
 	private async registerCommands() {
@@ -63,21 +52,10 @@ export default class Commands {
 		if (this.commands.size > 0) {
 			return;
 		}
+		// Insert command registrations here
+		this.commands.set(ping.data.name, ping);
+		this.commands.set(apply.data.name, apply);
 
-		const commandsDir = './src/commands/';
-		const files = fs.readdirSync(commandsDir, { withFileTypes: false });
-		const commands = files.map(async (f) => {
-			const module = await import(`../commands/${f}`);
-			// Ignore any non slash command builder commands
-			if (!this.isCommand(module.default)) {
-				return null;
-			}
-			// TODO: unfuck this cast
-			this.commands.set(module.default.data.name, module.default);
-			return module.default as Command;
-		});
-
-		await Promise.all(commands);
 		this.registerCommands();
 	}
 

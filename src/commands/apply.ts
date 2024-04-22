@@ -4,8 +4,9 @@ import {
 	type InteractionReplyOptions,
 } from 'discord.js';
 import { userHasApplication } from '../models/applications';
+import type { Command } from '../modules/commands';
 
-export default {
+const command: Command = {
 	data: new SlashCommandBuilder()
 		.setName('apply')
 		.setDescription('Start your application process!'),
@@ -20,3 +21,5 @@ export default {
 		// interaction.guild?.channels.cache.get();
 	},
 };
+
+export default command;
