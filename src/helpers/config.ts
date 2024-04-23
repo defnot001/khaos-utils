@@ -28,6 +28,7 @@ const configSchema = z.object({
 	discordAppId: snowflakeSchema,
 	discordServer: snowflakeSchema,
 	discordChannel: snowflakeSchema,
+	discordBotErrorLogChannel: snowflakeSchema,
 });
 
 let config: z.infer<typeof configSchema> | null = null;
@@ -41,6 +42,7 @@ export function getConfig() {
 		discordAppId: Bun.env.DISCORD_APP_ID,
 		discordServer: Bun.env.DISCORD_SERVER,
 		discordChannel: Bun.env.DISCORD_CHANNEL,
+		discordBotErrorLogChannel: Bun.env.ERROR_LOG_CHANNEL,
 	};
 
 	const parsed = configSchema.safeParse(conf);

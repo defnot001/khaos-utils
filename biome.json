@@ -7,7 +7,9 @@
 		"formatter": {
 			"enabled": true
 		},
-		"parser": { "allowComments": true }
+		"parser": {
+			"allowComments": true
+		}
 	},
 	"linter": {
 		"enabled": true,
@@ -33,7 +35,8 @@
 				"useShorthandArrayType": "warn"
 			},
 			"suspicious": {
-				"noEmptyBlockStatements": "warn"
+				"noEmptyBlockStatements": "warn",
+				"noConsoleLog": "warn"
 			},
 			"nursery": {
 				"noDuplicateJsonKeys": "warn"

@@ -6,8 +6,8 @@ export interface Command {
 	execute: (arg0: CommandInteraction) => Promise<undefined>;
 }
 import apply from '../commands/apply';
-// Imports for commands
 import ping from '../commands/ping';
+import { LOGGER } from '../helpers/logger';
 
 export default class Commands {
 	private static _instance: Commands | null = null;
@@ -42,9 +42,9 @@ export default class Commands {
 			if (!Array.isArray(data)) {
 				return;
 			}
-			console.log('Successfully loaded', data.length, '(/) commands');
+			LOGGER.info(`Successfully loaded ${data.length} (/) commands`);
 		} catch (error) {
-			console.error('Error while registering commands:', error, new Date());
+			await LOGGER.error(error, 'Error registering commands');
 		}
 	}
 

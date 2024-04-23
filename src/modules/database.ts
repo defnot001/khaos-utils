@@ -1,6 +1,7 @@
 import { Database } from 'bun:sqlite';
 import fs from 'node:fs';
 import { getDbConfig } from '../helpers/config';
+import { LOGGER } from '../helpers/logger';
 
 export class DbDriver {
 	public db: Database;
@@ -34,7 +35,7 @@ export class DbDriver {
 		}
 
 		const query = this.db.query('select * from applications');
-		console.log(query.all());
+		LOGGER.debug(`${query.all()}`);
 	}
 
 	static getInstance(): DbDriver {
