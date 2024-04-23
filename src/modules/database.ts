@@ -1,6 +1,6 @@
 import { Database } from 'bun:sqlite';
-import { getDbConfig } from '../helpers/config';
 import fs from 'node:fs';
+import { getDbConfig } from '../helpers/config';
 
 export class DbDriver {
 	public db: Database;

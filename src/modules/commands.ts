@@ -1,13 +1,13 @@
-import { REST, Routes, type CommandInteraction, type SlashCommandBuilder } from 'discord.js';
+import { type CommandInteraction, REST, Routes, type SlashCommandBuilder } from 'discord.js';
 import { getConfig } from '../helpers/config';
 
 export interface Command {
 	data: SlashCommandBuilder;
 	execute: (arg0: CommandInteraction) => Promise<undefined>;
 }
+import apply from '../commands/apply';
 // Imports for commands
 import ping from '../commands/ping';
-import apply from '../commands/apply';
 
 export default class Commands {
 	private static _instance: Commands | null = null;

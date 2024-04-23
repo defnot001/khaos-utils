@@ -1,7 +1,7 @@
 import {
 	type CommandInteraction,
-	SlashCommandBuilder,
 	type InteractionReplyOptions,
+	SlashCommandBuilder,
 } from 'discord.js';
 import { userHasApplication } from '../models/applications';
 import type { Command } from '../modules/commands';
